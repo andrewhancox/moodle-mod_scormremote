@@ -87,6 +87,7 @@ $string['error_imsmanifestmissing'] = 'The imsmanifest.xml is missing from the f
 $string['event_error_name'] = 'SCORM Remote error';
 $string['event_seatallocated_name'] = 'SCORM Remote seat allocated';
 $string['event_remoteviewed_name'] = 'SCORM Remote viewed';
+$string['event_missingmanualenrolment'] = 'The user \'{$a->fullname}\' was denied access to a SCORM package with the id \'{$a->cmid}\' as it is not currently visible to them.';
 $string['event_nosubscription'] = 'The user \'{$a->fullname}\' was denied access to a SCORM package for the course with id \'{$a->courseid}\' as the client \'{$a->clientname}\' does not have a subscription that includes this package.';
 $string['event_seatlimitreached'] = 'The user \'{$a->fullname}\' was denied access to a SCORM package for the course with id \'{$a->courseid}\' as the client \'{$a->clientname}\' ({$a->origin}) has reached its seat limit ({$a->seatlimit}).';
 $string['event_scormviewed'] = 'The user \'{$a->fullname}\' viewed a SCORM package for the course with id \'{$a->courseid}\' from client \'{$a->clientname}\'.';
