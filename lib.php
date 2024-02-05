@@ -312,6 +312,23 @@ function scormremote_pluginfile($course, $cm, $context, $filearea, $args, $force
             $enrolplugin->enrol_user($instance, $user->id, $roleid);
         }
 
+        $modinfo = get_fast_modinfo($course->id);
+        if (empty($modinfo->get_cms()[$cm->id]) || !$modinfo->get_cm($cm->id)->get_user_visible()) {
+            \mod_scormremote\event\remote_view_error::create([
+                'context' => $context,
+                'courseid' => $course->id,
+                'relateduserid' => $user->id,
+                'other' => [
+                    'reason' => get_string('event_missingmanualenrolment', 'mod_scormremote', [
+                        'cmid'     => $cm->id,
+                        'fullname' => $fullname,
+                    ]),
+                ]
+            ])->trigger();
+            $errorurl = $CFG->wwwroot . '/mod/scormremote/error.php?error=unauthorized';
+            exit($OUTPUT->render_from_template('mod_scormremote/init', ['datasource' => $errorurl]));
+        }
+
         // Log last access.
         $original = $USER;
         $USER = $user;
