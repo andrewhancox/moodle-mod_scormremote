@@ -171,6 +171,7 @@ function scormremote_pluginfile($course, $cm, $context, $filearea, $args, $force
         // Get client by origin.
         $client = client::get_record_by_domain($origin, $clientid);
         if (!$client) {
+            debugging('Bad domain: ' . $origin, DEBUG_DEVELOPER);
             $errorurl = $CFG->wwwroot . '/mod/scormremote/error.php?error=unauthorized';
             header('Content-Type: text/javascript');
             exit($OUTPUT->render_from_template('mod_scormremote/init', ['datasource' => $errorurl]));
