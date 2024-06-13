@@ -59,6 +59,14 @@ switch ($errorstring) {
         ];
         $PAGE->set_title('402 Payment Required');
         break;
+    case 'nomanualenrolmentinstance':
+        $templatedata = [
+            'errorcode'    => 401,
+            'errortitle'   => get_string('errorpage_nomanualenrolmentinstancetitle', 'mod_scormremote'),
+            'errormessage' => get_string('errorpage_nomanualenrolmentinstancemessage', 'mod_scormremote'),
+        ];
+        $PAGE->set_title('401 Unauthorized');
+        break;
     default:
         $templatedata = [
             'errorcode'    => 400,
