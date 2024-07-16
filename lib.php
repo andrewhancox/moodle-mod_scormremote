@@ -195,6 +195,29 @@ function scormremote_pluginfile($course, $cm, $context, $filearea, $args, $force
             exit($OUTPUT->render_from_template('mod_scormremote/init', ['datasource' => $errorurl]));
         }
 
+        // Check if client_id is required.
+        $validationtype = get_config('mod_scormremote', 'validationtype');
+        if (!empty($validationtype) && strpos($validationtype, 'client') !== false && empty($clientid)) {
+            // Create event: client id wasn't included.
+            $event = \mod_scormremote\event\remote_view_error::create([
+                'context' => $context,
+                'courseid' => $course->id,
+                'other' => [
+                  'origin' => $origin,
+                  'fullname' => $fullname,
+                  'reason' => get_string('event_clientidrequired', 'mod_scormremote', [
+                    'fullname' => $fullname,
+                    'courseid' => $course->id,
+                  ]),
+                ]
+            ]);
+            $event->trigger();
+
+            $errorurl = $CFG->wwwroot . "/mod/scormremote/error.php?error=clientidrequired&origin=" . $origin;
+            header('Content-Type: text/javascript');
+            exit($OUTPUT->render_from_template('mod_scormremote/init', ['datasource' => $errorurl]));
+        }
+
         // Get active subscription of client to tier where the course id exists.
         $sub = $client->get_subscription_by_courseid($course->id);
         if (!$sub) {

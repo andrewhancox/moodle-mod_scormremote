@@ -49,3 +49,11 @@ $student = get_archetype_roles('student');
 $student = reset($student);
 $general->add(new admin_setting_configselect('mod_scormremote/roleid',
     get_string('defaultrole', 'role'), '', $student->id ?? null, $options));
+
+$validationoptions = [
+    'referrer' => get_string('settings:validationtype:referrer', 'scormremote'),
+    'referrerandclient' => get_string('settings:validationtype:referrerandclient', 'scormremote'),
+];
+$general->add(new admin_setting_configselect('mod_scormremote/validationtype',
+    get_string('settings:validationtype', 'scormremote'),
+    get_string('settings:validationtype:desc', 'scormremote'), 'referrer', $validationoptions));

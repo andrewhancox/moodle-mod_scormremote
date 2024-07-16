@@ -61,7 +61,11 @@ class wrapper extends \moodleform {
         $mform->setType('filenameother', PARAM_RAW);
         $mform->addHelpButton('filenameother', 'filenameother', 'mod_scormremote');
 
-        $mform->addElement('header', 'optionalsettings', get_string('optionalsettings', 'scormremote'));
+        // Check if client id is optional.
+        $validationtype = get_config('mod_scormremote', 'validationtype');
+        if (empty($validationtype) || strpos($validationtype, 'client') === false) {
+            $mform->addElement('header', 'optionalsettings', get_string('optionalsettings', 'scormremote'));
+        }
 
         $courseid = $this->_customdata['courseid'];
 
@@ -102,6 +106,11 @@ class wrapper extends \moodleform {
             } else if (!preg_match($regex, $data['filenameother'])) {
                 $errors['filenameother'] = get_string('filenameother_error', 'mod_scormremote');
             }
+        }
+
+        $validationtype = get_config('mod_scormremote', 'validationtype');
+        if (!empty($validationtype) && strpos($validationtype, 'client') !== false && empty($data['clients'])) {
+            $errors['clients'] = get_string('error_clientrequired', 'mod_scormremote');
         }
 
         return $errors;
