@@ -41,7 +41,8 @@ class utils {
         $context = \context_module::instance($scormremote->coursemodule);
 
         $fs = get_file_storage();
-        $file = $fs->get_file($context->id, 'mod_scormremote', 'content', 0, '/', 'imsmanifest.xml');
+        $pathbase = !empty($scormremote->pathtoken) ? "/$scormremote->pathtoken/" : '/';
+        $file = $fs->get_file($context->id, 'mod_scormremote', 'content', 0, $pathbase, 'imsmanifest.xml');
 
         // This should not happen.
         if (!$file) {

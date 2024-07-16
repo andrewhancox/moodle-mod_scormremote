@@ -242,5 +242,20 @@ function xmldb_scormremote_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2023032900, 'scormremote');
     }
 
-        return true;
+    if ($oldversion < 2024092500) {
+
+        // Define field pathtoken to be added to scormremote.
+        $table = new xmldb_table('scormremote');
+        $field = new xmldb_field('pathtoken', XMLDB_TYPE_CHAR, '40', null, null, null, null, 'sha1hash');
+
+        // Conditionally launch add field pathtoken.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Scormremote savepoint reached.
+        upgrade_mod_savepoint(true, 2024092500, 'scormremote');
+    }
+
+    return true;
 }

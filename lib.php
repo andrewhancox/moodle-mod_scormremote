@@ -57,6 +57,7 @@ function scormremote_supports($feature) {
 function scormremote_add_instance($scormremote, $mform = null) {
     global $CFG, $DB;
 
+    $scormremote->pathtoken = random_string(20);
     $scormremote->timecreated = time();
     $scormremote->id = $DB->insert_record('scormremote', $scormremote);
 
@@ -96,6 +97,7 @@ function scormremote_update_instance($scormremote, $mform = null) {
         // This might be the same file.
         $old = $DB->get_record('scormremote', ['id' => $scormremote->instance]);
         $scormremote->sha1hash = $old->sha1hash;
+        $scormremote->pathtoken = $old->pathtoken;
         unset($old);
 
         // Store drafted file.
