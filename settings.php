@@ -57,3 +57,7 @@ $validationoptions = [
 $general->add(new admin_setting_configselect('mod_scormremote/validationtype',
     get_string('settings:validationtype', 'scormremote'),
     get_string('settings:validationtype:desc', 'scormremote'), 'referrer', $validationoptions));
+
+$general->add(new admin_setting_configcheckbox('mod_scormremote/protectmanifest',
+    get_string('settings:protectmanifest', 'scormremote'),
+    get_string('settings:protectmanifest:desc', 'scormremote'), 0));

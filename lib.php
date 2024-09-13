@@ -341,6 +341,12 @@ function scormremote_pluginfile($course, $cm, $context, $filearea, $args, $force
         }
 
     } else if ($filearea === 'content') {
+        // Prevent direct access to imsmanifest.xml files when additional security settings are enabled.
+        $protectmanifest = get_config('mod_scormremote', 'protectmanifest');
+        if (!empty($protectmanifest) && end($args) === 'imsmanifest.xml') {
+            send_header_404();
+            die;
+        }
 
         $revision = (int)array_shift($args); // Prevents caching problems - ignored here.
         $relativepath = implode('/', $args);

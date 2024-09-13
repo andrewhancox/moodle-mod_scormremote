@@ -35,6 +35,7 @@ $string['domain'] = 'Domain';
 $string['domain_help'] = 'A domain name is the text that a user types into a browser window to reach a particular website. For instance, the domain name for Google is \'google.com\'.';
 $string['embedclientid'] = 'Embed client id';
 $string['chooseclient'] = 'Embed Client id';
+$string['chooseclientwarning'] = 'If you have multiple clients sharing the same domain, you must include a client id in their wrappers to ensure the client mapping is correct.';
 $string['searchclient'] = 'Search client';
 $string['optionalsettings'] = 'Optional settings';
 $string['chooseclientdesc'] = 'Associates the wrapper with a particular client';
@@ -115,6 +116,9 @@ $string['errorpage_subrequiredtitle'] = 'Subscription required';
 $string['errorpage_subrequiredmessage'] = 'This content is only available for subscribed users. Contact your teacher to resolve this problem. Domain: {$a->domain}';
 $string['errorpage_sublimittitle'] = 'Subscription limit reached';
 $string['errorpage_sublimitmessage'] = 'Subscription limit has been reached. Contact your teacher to resolve this problem. Domain: {$a->domain}';
+$string['settings:protectmanifest'] = 'Protect imsmanifest.xml files';
+$string['settings:protectmanifest:desc'] = 'Adds additional protection for imsmanifest.xml files by preventing user access and not allowing them to be served as pluginfile content.
+    Scormremote does not access this as a pluginfile, and neither should standard scorm packages, but it may potentially break some rare custom packages where custom JS is used to access the file directly.';
 $string['settings:validationtype'] = 'Enforced validation types';
 $string['settings:validationtype:desc'] = 'Enforces use of the selected validation types on content that requires validation. Enforcing client ID validation will break all existing packages without client ids.';
 $string['settings:validationtype:referrer'] = 'Referrer';
