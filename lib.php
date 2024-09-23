@@ -265,7 +265,7 @@ function scormremote_pluginfile($course, $cm, $context, $filearea, $args, $force
 
         $templatedata = [
             'datasource'       => $datasource,
-            'jssource'         => $jssource . "?lms_origin={$origin}&student_id={$username}&student_name={$fullname}",
+            'jssource'         => $jssource . "?lms_origin={$origin}&student_id={$username}&student_name={$fullname}&client_id={$clientid}",
             'scormagainsource' => $CFG->wwwroot . '/mod/scormremote/scorm-again/scorm12.js',
         ];
         exit($OUTPUT->render_from_template('mod_scormremote/thirdlayer', $templatedata));
