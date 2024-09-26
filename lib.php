@@ -264,6 +264,24 @@ function scormremote_pluginfile($course, $cm, $context, $filearea, $args, $force
         // Check if this user is_enrolled in this course.
         if (!is_enrolled($context, $user)) {
             $instance = $DB->get_record('enrol', ['courseid' => $course->id, 'enrol' => 'manual']);
+
+            if (empty($instance)) {
+                \mod_scormremote\event\remote_view_error::create([
+                    'context' => $context,
+                    'courseid' => $course->id,
+                    'relateduserid' => $user->id,
+                    'other' => [
+                        'reason' => get_string('event_nomanualenrolmentinstance', 'mod_scormremote', [
+                            'fullname' => $fullname,
+                            'courseid' => $course->id,
+                        ]),
+                    ]
+                ])->trigger();
+
+                $errorurl = $CFG->wwwroot . '/mod/scormremote/error.php?error=nomanualenrolmentinstance';
+                exit($OUTPUT->render_from_template('mod_scormremote/init', ['datasource' => $errorurl]));
+            }
+
             $roleid = get_config('mod_scormremote', 'roleid') ?? null;
             $enrolplugin = enrol_get_plugin($instance->enrol);
             $enrolplugin->enrol_user($instance, $user->id, $roleid);
