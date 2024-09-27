@@ -114,7 +114,8 @@ class packagefile {
         if (!$packagefileimsmanifest) {
             // Extract zip.
             $packer = get_file_packer('application/zip');
-            $packagefile->extract_to_storage($packer, $context->id, $component, $filearea, 0, '/');
+            $pathbase = !empty($scormremote->pathtoken) ? "/$scormremote->pathtoken/" : '/';
+            $packagefile->extract_to_storage($packer, $context->id, $component, $filearea, 0, $pathbase);
         }
 
         $scormremote->sha1hash = $newhash;
@@ -142,6 +143,7 @@ class packagefile {
         // names sco_1.html, sco_2.html, sco_3.html. This html is generated from the secondlayer.mustache and contains the
         // datasource which points towards the third layer, but contains the filepath for the original file.
         $count = 0; // The $key => value, doesn't appear to work. So maintain counter ourself.
+        $pathbase = !empty($scormremote->pathtoken) ? "/$scormremote->pathtoken/" : '/';
         foreach ($manifest->resources->resource as $resource) {
             // Remove all the files from each resource.
             while (count($resource->file) > 0) {
@@ -154,7 +156,7 @@ class packagefile {
                 'mod_scormremote',
                 'remote',                     // THIS is pointing towards the third layer.
                 0,
-                '/',
+                $pathbase,
                 $resource->attributes()->href // The original file path.
             );
 

@@ -57,6 +57,7 @@ function scormremote_supports($feature) {
 function scormremote_add_instance($scormremote, $mform = null) {
     global $CFG, $DB;
 
+    $scormremote->pathtoken = random_string(20);
     $scormremote->timecreated = time();
     $scormremote->id = $DB->insert_record('scormremote', $scormremote);
 
@@ -96,6 +97,7 @@ function scormremote_update_instance($scormremote, $mform = null) {
         // This might be the same file.
         $old = $DB->get_record('scormremote', ['id' => $scormremote->instance]);
         $scormremote->sha1hash = $old->sha1hash;
+        $scormremote->pathtoken = $old->pathtoken;
         unset($old);
 
         // Store drafted file.
@@ -189,6 +191,29 @@ function scormremote_pluginfile($course, $cm, $context, $filearea, $args, $force
             $event->trigger();
 
             $errorurl = $CFG->wwwroot . "/mod/scormremote/error.php?error=unauthorized&origin=" . $origin;
+            header('Content-Type: text/javascript');
+            exit($OUTPUT->render_from_template('mod_scormremote/init', ['datasource' => $errorurl]));
+        }
+
+        // Check if client_id is required.
+        $validationtype = get_config('mod_scormremote', 'validationtype');
+        if (!empty($validationtype) && strpos($validationtype, 'client') !== false && empty($clientid)) {
+            // Create event: client id wasn't included.
+            $event = \mod_scormremote\event\remote_view_error::create([
+                'context' => $context,
+                'courseid' => $course->id,
+                'other' => [
+                  'origin' => $origin,
+                  'fullname' => $fullname,
+                  'reason' => get_string('event_clientidrequired', 'mod_scormremote', [
+                    'fullname' => $fullname,
+                    'courseid' => $course->id,
+                  ]),
+                ]
+            ]);
+            $event->trigger();
+
+            $errorurl = $CFG->wwwroot . "/mod/scormremote/error.php?error=clientidrequired&origin=" . $origin;
             header('Content-Type: text/javascript');
             exit($OUTPUT->render_from_template('mod_scormremote/init', ['datasource' => $errorurl]));
         }
@@ -287,6 +312,23 @@ function scormremote_pluginfile($course, $cm, $context, $filearea, $args, $force
             $enrolplugin->enrol_user($instance, $user->id, $roleid);
         }
 
+        $modinfo = get_fast_modinfo($course->id);
+        if (empty($modinfo->get_cms()[$cm->id]) || !$modinfo->get_cm($cm->id)->get_user_visible()) {
+            \mod_scormremote\event\remote_view_error::create([
+                'context' => $context,
+                'courseid' => $course->id,
+                'relateduserid' => $user->id,
+                'other' => [
+                    'reason' => get_string('event_missingmanualenrolment', 'mod_scormremote', [
+                        'cmid'     => $cm->id,
+                        'fullname' => $fullname,
+                    ]),
+                ]
+            ])->trigger();
+            $errorurl = $CFG->wwwroot . '/mod/scormremote/error.php?error=unauthorized';
+            exit($OUTPUT->render_from_template('mod_scormremote/init', ['datasource' => $errorurl]));
+        }
+
         // Log last access.
         $original = $USER;
         $USER = $user;
@@ -316,6 +358,12 @@ function scormremote_pluginfile($course, $cm, $context, $filearea, $args, $force
         }
 
     } else if ($filearea === 'content') {
+        // Prevent direct access to imsmanifest.xml files when additional security settings are enabled.
+        $protectmanifest = get_config('mod_scormremote', 'protectmanifest');
+        if (!empty($protectmanifest) && end($args) === 'imsmanifest.xml') {
+            send_header_404();
+            die;
+        }
 
         $revision = (int)array_shift($args); // Prevents caching problems - ignored here.
         $relativepath = implode('/', $args);
